@@ -2,5 +2,7 @@ FROM            node:18
 RUN             mkdir /app
 WORKDIR         /app
 COPY            ./ /app/
+ADD             https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /app/rds-combined-ca-bundle.pem
 RUN             npm install
-ENTRYPOINT      ["node", "server.js"]
+ENTRYPOINT      ["bash", "/app/run.sh"]
+
