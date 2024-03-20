@@ -1,0 +1,58 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+spec:
+  selector:
+    app: user
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: user
+  labels:
+    app: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      initContainers:
+        - name: parameters-pull
+          image: docker.io/rkalluru/d77-parameter-store-init-container-image
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /parameters
+            name: parameters
+          env:
+            - name: PARAMS
+              value: "dev.roboshop.user.MONGO_URL,MONGO_URL dev.roboshop.user.REDIS_HOST,REDIS_HOST"
+      containers:
+        - name: user
+          image: rkalluru/d77-user
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "150Mi"
+              cpu: "100m"
+          volumeMounts:
+          - mountPath: /parameters
+            name: parameters
+      volumes:
+      - name: parameters
+        emptyDir: {}
+
+
