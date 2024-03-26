@@ -1,0 +1,4 @@
+env: user
+replica: 2
+PARAMS: "dev.roboshop.user.MONGO_URL,MONGO_URL dev.roboshop.user.REDIS_HOST,REDIS_HOST"
+
